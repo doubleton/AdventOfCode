@@ -9,13 +9,13 @@ import java.util.List;
 public class Day8 {
 
     public static void main(String[] args) throws IOException {
-//        List<String> lines = Utils.readLines(args[0]);
         List<String> lines = Utils.readLines(args[1]);
 
         byte[][] trees = initTrees(lines);
 
         printTrees(trees);
-//        System.out.println("Visible: " + countVisible(trees));
+
+        System.out.println("Visible: " + countVisible(trees));
         System.out.println("Max scenic score: " + maxScenicScore(trees));
     }
 

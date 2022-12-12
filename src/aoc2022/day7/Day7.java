@@ -16,7 +16,8 @@ public class Day7 {
 
         fs.print();
 
-//        System.out.println(fs.sumDirSizes(100000));
+        System.out.println("sumDirSizes: " + fs.sumDirSizes(100000));
+
         System.out.println("usedDiskSpace: " + fs.usedDiskSpace());
         System.out.println("unUsedDiskSpace: " + fs.unUsedDiskSpace());
         System.out.println("spaceToFree: " + fs.spaceToFree());
