@@ -103,6 +103,14 @@ public class Volcano {
         int size = allValves.length;
         int count = (1 << size) - 1;
         int maxPressure = 0;
+        // iterate over all possible options to split allValves into two sets
+        // checking all numbers from 1 to (2^size - 2) in binary form:
+        // 0 0 0 0 1
+        // 0 0 0 1 0
+        // 0 0 0 1 1
+        // ...
+        // 1 1 1 0 1
+        // 1 1 1 1 0
         for (int i = 1; i < count; i++) {
             Set<String> myValves = new HashSet<>();
             Set<String> elValves = new HashSet<>();
