@@ -1,7 +1,9 @@
 package aoc2022.day17;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Chamber {
@@ -32,11 +34,11 @@ public class Chamber {
         }),
     };
 
-    private LinkedList<Byte> well = new LinkedList<>();
-
-    private long accHeight;
+    private final LinkedList<Byte> well = new LinkedList<>();
 
     private char[] moves;
+
+    private final Map<CacheKey, CacheValue> cache = new HashMap<>();
 
     public void init(String moves) {
         this.moves = moves.toCharArray();
@@ -44,26 +46,66 @@ public class Chamber {
 
     public void simulate(long count) {
         AtomicInteger step = new AtomicInteger(0);
+        long offset = 0;
+
         for (long i = 0; i < count; i++) {
-            Rock rock = ROCKS[(int) (i % ROCKS.length)].copy();
+            int rockIndex = (int) (i % ROCKS.length);
+            Rock rock = ROCKS[rockIndex].copy();
             int rockBottom = well.size() + 3;
             simulateMoves(step, rock, rockBottom);
-//            tryReduce();
-        }
-        System.out.println("Last step: " + step.get());
-    }
 
-    private void tryReduce() {
-        int height = well.size();
-        ListIterator<Byte> it = well.listIterator(height);
-        while (it.hasPrevious()) {
-            Byte line = it.previous();
-            height--;
-            if (line == 0b01111111) {
-                well = new LinkedList<>(well.subList(height, well.size()));
-                accHeight += height;
+            byte hash = calculateHash();
+            int move = step.get() % moves.length;
+            long height = getHeight();
+            CacheKey key = new CacheKey(move, rockIndex, hash);
+            if (height > 50 && cache.containsKey(key)) {
+                CacheValue value = cache.get(key);
+                long lastHeight = value.height();
+                long lastRocksCount = value.rocksCount();
+
+                long remainder = count - i;
+                long reps = remainder / (i - lastRocksCount);
+                offset = reps * (height - lastHeight);
+                System.out.println("Offset: " + offset);
+                i += reps * (i - lastRocksCount);
+                cache.clear();
+
+/*
+                long heightOffset = height - lastHeight;
+                long rocksOffset = i - lastRocksCount;
+
+                long repeatedPatterns = (count - i) / rocksOffset;
+                long repeatedHeight = repeatedPatterns * heightOffset;
+                long totalHeight = repeatedHeight + lastHeight;
+
+                System.out.println("lastHeight: " + lastHeight);
+                System.out.println("height: " + height);
+                System.out.println("heightOffset: " + heightOffset);
+                System.out.println("lastRocksCount: " + lastRocksCount);
+                System.out.println("rockCount: " + i);
+                System.out.println("repeatedPatterns: " + repeatedPatterns);
+                System.out.println("repeatedHeight: " + repeatedHeight);
+
+                System.out.println("Result height after " + count + " rocks is: " + totalHeight);
+                break;
+*/
+            } else {
+                cache.put(key, new CacheValue(height, i));
             }
         }
+
+        System.out.println(getHeight() + offset);
+    }
+
+    private byte calculateHash() {
+        byte hash = 0;
+
+        int height = well.size();
+        ListIterator<Byte> it = well.listIterator(height);
+        while (it.hasPrevious() && it.previousIndex() >= height - 50) {
+            hash ^= it.previous();
+        }
+        return hash;
     }
 
     private void simulateMoves(AtomicInteger step, Rock rock, int rockBottom) {
@@ -134,6 +176,9 @@ public class Chamber {
     }
 
     public long getHeight() {
-        return well.size() + accHeight;
+        return well.size();
     }
+
+    private record CacheKey(int move, int rock, int hash) { }
+    private record CacheValue(long height, long rocksCount) { }
 }
