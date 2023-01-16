@@ -66,35 +66,14 @@ public class Chamber {
                 long remainder = count - i;
                 long reps = remainder / (i - lastRocksCount);
                 offset = reps * (height - lastHeight);
-                System.out.println("Offset: " + offset);
                 i += reps * (i - lastRocksCount);
                 cache.clear();
-
-/*
-                long heightOffset = height - lastHeight;
-                long rocksOffset = i - lastRocksCount;
-
-                long repeatedPatterns = (count - i) / rocksOffset;
-                long repeatedHeight = repeatedPatterns * heightOffset;
-                long totalHeight = repeatedHeight + lastHeight;
-
-                System.out.println("lastHeight: " + lastHeight);
-                System.out.println("height: " + height);
-                System.out.println("heightOffset: " + heightOffset);
-                System.out.println("lastRocksCount: " + lastRocksCount);
-                System.out.println("rockCount: " + i);
-                System.out.println("repeatedPatterns: " + repeatedPatterns);
-                System.out.println("repeatedHeight: " + repeatedHeight);
-
-                System.out.println("Result height after " + count + " rocks is: " + totalHeight);
-                break;
-*/
             } else {
                 cache.put(key, new CacheValue(height, i));
             }
         }
 
-        System.out.println(getHeight() + offset);
+        System.out.println("Total height: " + (getHeight() + offset));
     }
 
     private byte calculateHash() {
