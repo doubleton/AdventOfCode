@@ -40,7 +40,8 @@ public class FieldMap {
             }
         }
 
-        return new FieldMap(grid, row, maxCol, grid.keySet().iterator().next());
+        Point start = grid.keySet().iterator().next();
+        return new FieldMap(grid, row, maxCol, start);
     }
 
     public void print() {
