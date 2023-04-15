@@ -40,7 +40,7 @@ public class Field {
         }
     }
 
-    private void move() {
+    public boolean move() {
         Map<Position, Position> nextPositions = new HashMap<>();
 
         for (Position elfPosition : elfPositions) {
@@ -48,17 +48,22 @@ public class Field {
             nextPositions.put(elfPosition, nextPosition);
         }
 
+        boolean moved = false;
+
         Collection<Position> newPositions = nextPositions.values();
         for (Map.Entry<Position, Position> entry : nextPositions.entrySet()) {
             Position curPosition = entry.getKey();
             Position nextPosition = entry.getValue();
-            if (nextPosition != null && Collections.frequency(newPositions, nextPosition) == 1) {
+            if (nextPosition != null && !curPosition.equals(nextPosition) && Collections.frequency(newPositions, nextPosition) == 1) {
                 elfPositions.remove(curPosition);
                 elfPositions.add(nextPosition);
+                moved = true;
             }
         }
 
         rotateDirections();
+
+        return moved;
     }
 
     private Position findNextPosition(Position position) {
