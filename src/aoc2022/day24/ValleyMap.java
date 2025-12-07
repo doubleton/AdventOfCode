@@ -65,10 +65,24 @@ public class ValleyMap {
     }
 
     public int solve() {
+        return travel(entrance, exit, 0);
+    }
+
+    public int solvePart2() {
+        int toExit = travel(entrance, exit, 0);
+        int backToStart = travel(exit, entrance, toExit);
+        return travel(entrance, exit, backToStart);
+    }
+
+    private int travel(Position start, Position target, int startMinute) {
+        if (start.equals(target)) {
+            return startMinute;
+        }
+
         LinkedList<QueueKey> queue = new LinkedList<>();
-        queue.add(new QueueKey(0, entrance));
+        queue.add(new QueueKey(startMinute, start));
         Set<SeenKey> seen = new HashSet<>();
-        seen.add(new SeenKey(entrance, 0));
+        seen.add(new SeenKey(start, startMinute % cycleLength));
 
         int[][] directions = new int[][] {
                 {0, 0},    // wait
@@ -90,11 +104,11 @@ public class ValleyMap {
                 int newCol = curPos.col() + dir[1];
                 Position newPos = new Position(newRow, newCol);
 
-                if (newPos.equals(exit)) {
+                if (newPos.equals(target)) {
                     return nextMinute;
                 }
 
-                if (!isInside(newPos) && !newPos.equals(entrance)) {
+                if (!isValidMove(newPos)) {
                     continue;
                 }
 
@@ -109,6 +123,10 @@ public class ValleyMap {
             }
         }
         throw new IllegalStateException("No path found");
+    }
+
+    private boolean isValidMove(Position pos) {
+        return isInside(pos) || pos.equals(entrance) || pos.equals(exit);
     }
 
     private boolean hasBlizzard(Position pos, boolean[][] blizzardsAtMinute) {
